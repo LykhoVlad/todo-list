@@ -19,14 +19,12 @@ export const store = new Vuex.Store({
   plugins: [createPersistedState()],
   getters: {
     filterTodos(state) {
-      if(state.filter === 'all') {
-        return state.todos;
-      } else if (state.filter === 'active') {
-        return state.todos.filter(todo => !todo.completed);
-      } else if (state.filter === 'completed') {
-        return state.todos.filter(todo => todo.completed);
-      } else {
-        return state.todos
+      const filter = state.filter;
+      switch (filter) {
+        case 'all': return state.todos;
+        case 'active': return state.todos.filter(todo => !todo.completed);
+        case 'completed': return state.todos.filter(todo => todo.completed);
+        default: return state.todos;
       }
     },
     showClearButton(state) {
@@ -44,7 +42,8 @@ export const store = new Vuex.Store({
     },
     updateItem(state, todo) {
       const index = state.todos.findIndex(item => item.id == todo.id);
-      if(index) {
+      if(index === 0 || index) {
+        console.log(index)
         state.todos.splice(index, 1, {
           'id': todo.id,
           'title': todo.title,
@@ -55,7 +54,7 @@ export const store = new Vuex.Store({
     },
     removeTodo(state, id) {
       const index = state.todos.findIndex(item => item.id == id);
-      if(index) {
+      if(index === 0 || index) {
         state.todos.splice(index, 1);
       }
     },

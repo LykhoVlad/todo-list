@@ -28,12 +28,17 @@
         <md-button class="md-raised md-primary" :disabled="filter === 'completed'" @click="changedFilter('completed')">Completed</md-button>
       </div>
       <div class="todo__content">
-        <Item
-          v-for="item of filterTodos"
-          :key="item.id"
-          :todo="item"
-          @fullImage="setFullImage($event)"
-        />
+        <template v-if="filterTodos.length > 0">
+          <Item
+            v-for="item of filterTodos"
+            :key="item.id"
+            :todo="item"
+            @fullImage="setFullImage($event)"
+          />
+        </template>
+        <template v-else>
+          <h2>No items in this category</h2>
+        </template>
       </div>
       <md-button v-if="showClearButton && (filter == 'all' || filter == 'completed' )" class="md-raised md-accent" @click="clearCompleted()">Clear Completed</md-button>
     </div>
@@ -63,9 +68,10 @@ export default {
     }
   },
   created() {
-    const stateOfTodos = localStorage.getItem('vuex');
-    if(stateOfTodos) {
-      this.$store.state.todos = JSON.parse(stateOfTodos.todos)
+    const stateVuex = localStorage.getItem('vuex');
+    if(stateVuex) {
+      const getStateObj = JSON.parse(stateVuex);
+      this.$store.state.todos = getStateObj.todos;
     } else {
       this.$store.state.todos = [];
     }

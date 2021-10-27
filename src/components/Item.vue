@@ -69,6 +69,7 @@ export default {
       this.edit = false;
     },
     changedTodo() {
+      console.log(this.completed)
       this.$store.dispatch('updateItem', {
         'id': this.id,
         'title': this.title,
