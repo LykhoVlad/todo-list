@@ -1,13 +1,22 @@
 import Vue from "vue";
-import Vuex from "vuex"
+import Vuex from "vuex";
+import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
   state: {
     filter: 'all',
-    todos: []
+    todos: [
+      {
+        'id': 1,
+        'title': 'First todo',
+        'completed': false,
+        'image': ''
+      }
+    ]
   },
+  plugins: [createPersistedState()],
   getters: {
     filterTodos(state) {
       if(state.filter === 'all') {
@@ -34,26 +43,27 @@ export const store = new Vuex.Store({
       })
     },
     updateItem(state, todo) {
-      const index = state.todos.findIndex(item => item.id == todo.id)
-      state.todos.splice(index, 1, {
-        'id': todo.id,
-        'title': todo.title,
-        'image': todo.image,
-        'completed': todo.completed,
-      })
-      localStorage.setItem('todos', JSON.stringify(state.todos));
+      const index = state.todos.findIndex(item => item.id == todo.id);
+      if(index) {
+        state.todos.splice(index, 1, {
+          'id': todo.id,
+          'title': todo.title,
+          'image': todo.image,
+          'completed': todo.completed,
+        })
+      }
     },
     removeTodo(state, id) {
-      const index = state.todos.findIndex(item => item.id == id)
-      state.todos.splice(index, 1);
-      localStorage.setItem('todos', JSON.stringify(state.todos));
+      const index = state.todos.findIndex(item => item.id == id);
+      if(index) {
+        state.todos.splice(index, 1);
+      }
     },
     updateFilter(state, filter) {
       state.filter = filter
     },
     clearCompleted(state) {
       state.todos = state.todos.filter(todo => !todo.completed);
-      localStorage.setItem('todos', JSON.stringify(state.todos));
     }
   },
   actions: {

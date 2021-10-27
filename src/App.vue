@@ -23,5 +23,6 @@ export default {
   text-align: center;
   color: #fff;
   margin-top: 60px;
+  overflow: hidden;
 }
 </style>

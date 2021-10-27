@@ -15,26 +15,30 @@
         class="new-item__draw-canvas absolute-center"
         @getImage="newImage($event)"/>
       </div>
-      <md-button class="md-raised" @click="draw = true">Add image</md-button>
-      <md-button class="md-raised md-primary" @click="addNewItem()">Add New</md-button>
-    </div>
-    <div v-if="fullImage" class="fixed" @click.self="fullImage = ''">
-      <img class="absolute-center" :src="fullImage" alt="full">
+      <div class="new-item__buttons">
+        <md-button class="md-raised" @click="draw = true">Add image</md-button>
+        <md-button class="md-raised md-primary" @click="addNewItem()">Add New</md-button>
+      </div>
     </div>
     <div class="todo">
+      <p>Total: {{ filterTodos.length }}</p>
       <div class="todo__filter">
         <md-button class="md-raised md-primary" :disabled="filter === 'all'" @click="changedFilter('all')">All</md-button>
         <md-button class="md-raised md-primary" :disabled="filter === 'active'" @click="changedFilter('active')">Active</md-button>
         <md-button class="md-raised md-primary" :disabled="filter === 'completed'" @click="changedFilter('completed')">Completed</md-button>
       </div>
-      <Item
-        v-for="(item, i) of filterTodos"
-        :key="item.id"
-        :todo="item"
-        :index="i"
-        @fullImage="getFullImage($event)"
-      />
+      <div class="todo__content">
+        <Item
+          v-for="item of filterTodos"
+          :key="item.id"
+          :todo="item"
+          @fullImage="setFullImage($event)"
+        />
+      </div>
       <md-button v-if="showClearButton && (filter == 'all' || filter == 'completed' )" class="md-raised md-accent" @click="clearCompleted()">Clear Completed</md-button>
+    </div>
+    <div v-if="fullImage" class="fixed" @click.self="fullImage = ''">
+      <img class="absolute-center" :src="fullImage" alt="full">
     </div>
   </div>
 </template>
@@ -44,7 +48,7 @@ import Item from './Item.vue';
 import VueDraw from './Vue-draw.vue'
 
 export default {
-  name: 'HelloWorld',
+  name: 'Main',
   components: {
     Item,
     VueDraw
@@ -59,9 +63,9 @@ export default {
     }
   },
   created() {
-    const stateOfTodos = localStorage.getItem('todos');
+    const stateOfTodos = localStorage.getItem('vuex');
     if(stateOfTodos) {
-      this.$store.state.todos = JSON.parse(stateOfTodos)
+      this.$store.state.todos = JSON.parse(stateOfTodos.todos)
     } else {
       this.$store.state.todos = [];
     }
@@ -80,7 +84,7 @@ export default {
   },
   methods: {
     addNewItem () {
-      if(this.newItem.trim() == 0) {
+      if(this.newItem.trim().length === 0) {
         return
       }
 
@@ -104,7 +108,7 @@ export default {
     clearCompleted() {
       this.$store.dispatch('clearCompleted')
     },
-    getFullImage(image) {
+    setFullImage(image) {
       this.fullImage = image;
     }
   }
@@ -151,6 +155,14 @@ export default {
     display: flex;
     align-items: center;
 
+    &__buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      @media only screen and (min-width: 768px) {
+        flex-direction: row;
+      }
+    }
     &__thumb {
       width: 40px;
       height: 40px;
@@ -162,6 +174,21 @@ export default {
         &.active {
           background: blue;
         }
+      }
+    }
+    &__content {
+      width: 100%;
+      margin-top: 20px;
+      display: grid;
+      align-items: center;
+      grid-template-columns: 1fr;
+      grid-gap: 20px;
+
+      @media only screen and (min-width: 768px) {
+        grid-template-columns: 1fr 1fr;
+      }
+      @media only screen and (min-width: 1200px) {
+        grid-template-columns: 1fr 1fr 1fr;
       }
     }
   }

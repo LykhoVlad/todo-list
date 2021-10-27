@@ -1,27 +1,38 @@
 <template>
-  <div class="todo__item" >
-    <div class="todo__item-info">
-      <md-checkbox v-model="completed" class="md-primary" @change="changedTodo()" />
+  <md-card>
+    <md-card-media>
+      <md-ripple>
+        <img class="item-image" v-if="image" :src="image" alt="title" @click="getFullImage()">
+        <img class="item-image completed" v-else-if="completed && !image" src="../assets/done.jpg" alt="title" @click="getFullImage()">
+        <img class="item-image" v-else src="../assets/todo.png" alt="title" @click="getFullImage()">
+      </md-ripple>
+    </md-card-media>
+
+    <md-card-content>
+      <md-field v-if="edit">
+        <md-input
+          v-model="title"
+          @keyup.enter="saveChange()"
+          @keyup.esc="cancelChange()"
+        />
+      </md-field>
       <p
-      v-if="!edit"
+      v-else
       class="md-title title"
       :class="{'completed': completed}"
       @dblclick="editItem()">
         {{ title }}
       </p>
-      <md-field v-else>
-        <md-input
-          v-model="editTitle"
-          @keyup.enter="saveChange()"
-          @keyup.esc="cancelChange()"
-        />
-      </md-field>
-      <img class="todo__item-thumb" v-if="image" :src="image" alt="title" @click="getFullImage()">
-    </div>
-    <div @click="removeTodo()">
-      <md-icon>highlight_off</md-icon>
-    </div>
-  </div>
+    </md-card-content>
+
+    <md-card-actions class="item">
+      <md-checkbox v-model="completed" class="md-primary" @change="changedTodo()" />
+
+      <md-button class="md-icon-button" @click="removeTodo()">
+        <md-icon>highlight_off</md-icon>
+      </md-button>
+    </md-card-actions>
+  </md-card>
 </template>
 
 <script>
@@ -32,14 +43,6 @@ export default {
       type: Object,
       required: true
     },
-    index: {
-      type: Number
-    }
-  },
-  watch: {
-    index: function (val) {
-      this.index = val;
-    }
   },
   data () {
     return {
@@ -48,20 +51,18 @@ export default {
       title: this.todo.title,
       image: this.todo.image,
       completed: this.todo.completed,
-      editTitle: '',
     }
   },
   methods: {
     editItem () {
       this.edit = true;
-      this.editTitle = this.title;
     },
     cancelChange() {
       this.edit = false;
     },
     saveChange() {
-      if(this.editTitle.trim() != 0) {
-        this.title = this.editTitle
+      if(this.title.trim().length === 0) {
+        this.title = this.todo.title;
       }
 
       this.changedTodo();
@@ -86,28 +87,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .todo__item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
+  .title {
+    overflow-wrap: anywhere;
 
-    &-info {
-      display: flex;
-      align-items: center;
+    &.completed {
+    text-decoration: line-through;
+  }
+  }
+  .item-image {
+    max-height: 235px;
+    object-fit: cover;
 
-      .completed {
-        text-decoration: line-through;
-      }
-    }
-    &-thumb {
-      width: 35px;
-      height: 35px;
-      margin: 0 20px;
-    }
-
-    .md-icon {
-      margin: 0;
+    &.completed {
+      object-fit: contain;
     }
   }
 </style>
