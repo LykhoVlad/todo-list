@@ -6,7 +6,7 @@
         <label>New Item</label>
         <md-input v-model="newItem" @keyup.enter="addNewItem" />
       </md-field>
-      <img class="new-item__thumb" v-if="image" :src="image" alt="new item">
+      <img class="new-item__thumb" @click="setFullImage(image)" v-if="image" :src="image" alt="new item">
       <div
       v-if="draw"
       class="new-item__draw fixed"
